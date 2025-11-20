@@ -1,80 +1,69 @@
-import re
-import phonenumbers
-from email_validator import validate_email
-import os
-import PyPDF2
-from docx import Document
+# main.py
+
 import tkinter as tk
 from tkinter import filedialog
+import re
+
+from file_loader import FileLoader
+from extractors import Extractors
+from analyzer import Analyzer
+from writer import Writer
 
 root = tk.Tk()
 root.withdraw()
 
 file_path = filedialog.askopenfilename(
-    title="Select a file (TXT, PDF, or DOCX)",
+    title="Select a file",
     filetypes=[
-        ("All supported files", "*.txt *.pdf *.docx"),
-        ("Text files", "*.txt"),
-        ("PDF files", "*.pdf"),
-        ("Word files", "*.docx"),
+        ("Text, PDF, DOCX", "*.txt *.pdf *.docx"),
         ("All files", "*.*")
     ]
 )
 
 if not file_path:
-    print("No file selected. Exiting.")
+    print("No file selected.")
     exit()
 
-if not os.path.isfile(file_path):
-    print("Invalid file path or file not found.")
+try:
+    text = FileLoader.load_file(file_path)
+except Exception as e:
+    print(f"Error loading file: {e}")
     exit()
 
-file_extension = os.path.splitext(file_path)[1].lower()
-text = ""
+emails = Extractors.extract_emails(text)
+phones = Extractors.extract_phones(text)
 
-if file_extension == ".txt":
-    with open(file_path, "r", encoding="utf-8") as f:
-        text = f.read()
-    print("TXT file loaded successfully.")
+analysis = Analyzer.analyze(text, emails, phones)
 
-elif file_extension == ".pdf":
-    with open(file_path, "rb") as f:
-        reader = PyPDF2.PdfReader(f)
-        for page in reader.pages:
-            text += (page.extract_text() or "") + "\n"
-    print("PDF file loaded successfully.")
+# 2. إخفاء الأرقام وإنشاء النص المخفي
+masked_text = text
 
-elif file_extension == ".docx":
-    doc = Document(file_path)
-    for para in doc.paragraphs:
-        text += para.text + "\n"
-    print("Word file loaded successfully.")
+# فرز الأرقام من النهاية إلى البداية لتجنب تغيير المواقع (Indexes)
+patterns_to_mask = sorted(phones, key=lambda x: x["start"], reverse=True)
 
-else:
-    print(f"Unsupported file type '{file_extension}'.")
-    exit()
+# عدد الأرقام المراد إخفاؤها
+MASK_LENGTH = 6
 
-email_pattern = r"[a-zA-Z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"
-emails = re.findall(email_pattern, text)
-print("\nFound emails:", emails)
+for p in patterns_to_mask:
 
-valid_emails = []
-for e in emails:
-    result = validate_email(e, check_deliverability=False)
-    valid_emails.append(result.email)
+    start = p["start"]
+    end = p["end"]
 
-print("✅ Valid emails:", valid_emails)
+    # الحصول على النص الأصلي الذي تم مطابقته
+    original_text_slice = text[start:end]
+    original_length = len(original_text_slice)
 
-print("\n Found phone numbers:")
-phone_numbers = []
-for match in phonenumbers.PhoneNumberMatcher(text, None):
-    num = match.number
-    if phonenumbers.is_valid_number(num):
-        formatted = phonenumbers.format_number(num, phonenumbers.PhoneNumberFormat.E164)
-        phone_numbers.append(formatted)
-        print("•", formatted)
+    # التحقق من أن النص طويل بما يكفي للإخفاء
+    if original_length >= MASK_LENGTH:
+        unmasked_part = original_text_slice[:-MASK_LENGTH]
+        mask = '*' * MASK_LENGTH
+
+        masked_value = unmasked_part + mask
     else:
-        print("• Invalid number:", phonenumbers.format_number(num, phonenumbers.PhoneNumberFormat.INTERNATIONAL))
+        masked_value = '*' * original_length
 
-data = {"emails": valid_emails, "phones": phone_numbers}
-print("\nSummary:", data)
+    masked_text = masked_text[:start] + masked_value + masked_text[end:]
+
+# 3. كتابة ملفات الإخراج
+Writer.write_output(analysis)
+Writer.write_masked_text(masked_text, "masked_output.txt")

@@ -1,0 +1,78 @@
+WORD ANALYSIS REPORT
+=====================
+
+Word: support@techhub.com
+Type: Email
+Line Number (Ln): 4
+Column Number (Col): 9
+------------------------
+Word: hr.department@techhub.co.uk
+Type: Email
+Line Number (Ln): 5
+Column Number (Col): 7
+------------------------
+Word: info_2025-service@mail-server.org
+Type: Email
+Line Number (Ln): 6
+Column Number (Col): 11
+------------------------
+Word: ahmed.khaled22@gmail.com
+Type: Email
+Line Number (Ln): 19
+Column Number (Col): 9
+------------------------
+Word: mona.saleh@outlook.com
+Type: Email
+Line Number (Ln): 20
+Column Number (Col): 8
+------------------------
+Word: omar.dev@hotmail.com
+Type: Email
+Line Number (Ln): 21
+Column Number (Col): 8
+------------------------
+Word: sara@company.ai
+Type: Email
+Line Number (Ln): 22
+Column Number (Col): 8
+------------------------
+Word: john@gmal.com
+Type: Email
+Line Number (Ln): 34
+Column Number (Col): 7
+------------------------
+Word: +201001234567
+Type: PhoneNumber
+Line Number (Ln): 9
+Column Number (Col): 1
+------------------------
+Word: +201122334455
+Type: PhoneNumber
+Line Number (Ln): 9
+Column Number (Col): 37
+------------------------
+Word: +971501234567
+Type: PhoneNumber
+Line Number (Ln): 10
+Column Number (Col): 30
+------------------------
+Word: +966531679615
+Type: PhoneNumber
+Line Number (Ln): 14
+Column Number (Col): 3
+------------------------
+Word: +20223456789
+Type: PhoneNumber
+Line Number (Ln): 15
+Column Number (Col): 3
+------------------------
+Word: +201100001111
+Type: PhoneNumber
+Line Number (Ln): 16
+Column Number (Col): 3
+------------------------
+Word: +201098765432
+Type: PhoneNumber
+Line Number (Ln): 29
+Column Number (Col): 20
+------------------------
